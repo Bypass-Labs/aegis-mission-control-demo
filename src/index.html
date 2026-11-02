@@ -75,6 +75,7 @@
               <circle cx="208" cy="235" r="142" fill="none" stroke="#397b93" stroke-width="1" stroke-dasharray="5 9" opacity=".65"/>
               <circle cx="208" cy="235" r="183" fill="none" stroke="#315c71" stroke-width="1" opacity=".4"/>
               <path class="approach-path" d="M658 74 C560 102 540 164 461 187 S330 236 260 236" fill="none" stroke="#ff8d6c" stroke-width="2" stroke-dasharray="5 8"/>
+              <path class="impact-path" d="M658 74 C510 112 404 171 263 232" fill="none" stroke="#ff574d" stroke-width="4" stroke-dasharray="9 7"/>
               <path d="M335 335 C400 275 467 236 513 180" fill="none" stroke="#6ff2de" stroke-width="8" opacity=".36" filter="url(#beamGlow)"/>
               <path class="intercept-path" d="M335 335 C400 275 467 236 513 180" fill="none" stroke="#91fff0" stroke-width="2" stroke-dasharray="3 6"/>
               <circle cx="513" cy="180" r="12" fill="none" stroke="#baffee" stroke-width="2"/>
@@ -88,6 +89,7 @@
                 <text x="528" y="64">2026 QX-9</text>
                 <text x="492" y="220">INTERCEPT POINT</text>
                 <text x="340" y="367">ION BURN VECTOR</text>
+                <text class="impact-label" x="403" y="135">EARTH IMPACT LIKELY</text>
               </g>
               <circle cx="208" cy="235" r="102" fill="none" stroke="#a5f7ff" opacity=".25"/>
             </svg>
@@ -104,7 +106,7 @@
         <div class="status-stack">
           <div class="status-panel panel">
             <div class="panel-heading"><div><span class="section-number">02 /</span><h2>Mission status</h2></div></div>
-            <div class="status-banner"><span class="status-icon">!</span><div><strong>DEFLECTION WINDOW OPEN</strong><small>Interceptor ready for trajectory lock</small></div></div>
+            <div class="status-banner" id="statusBanner"><span class="status-icon">!</span><div><strong id="statusTitle">DEFLECTION WINDOW OPEN</strong><small id="statusDetail">Interceptor ready for trajectory lock</small></div></div>
             <div class="metric-row"><span>Mission confidence</span><strong id="confidence">73%</strong></div>
             <div class="meter"><span id="confidenceBar" style="width:73%"></span></div>
             <div class="metric-row"><span>Burn angle</span><strong><span id="angle">32.4</span>°</strong></div>

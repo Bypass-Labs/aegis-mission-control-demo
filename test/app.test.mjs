@@ -90,6 +90,13 @@ test('authenticated crew can read controls and adjust the simulated vector', asy
   const update = await post('/api/mission/vector', {angle: 34.2, thrust: 71}, cookie);
   assert.equal(update.status, 200);
   assert.equal((await update.json()).vector.angle, 34.2);
+  const danger = await post('/api/mission/vector', {angle: 0, thrust: 0}, cookie);
+  assert.ok((await danger.json()).confidence < 30);
+  const briefing = await fetch(`${base}/api/public/briefing`);
+  assert.equal((await briefing.json()).status, 'COLLISION COURSE DETECTED');
+  const events = await fetch(`${base}/api/public/events`);
+  assert.match(JSON.stringify(await events.json()), /Burn vector changed/);
+  await post('/api/mission/vector', {angle: 32.4, thrust: 68}, cookie);
 });
 
 test('remote preview and a crew uplink check work with ordinary inputs', async () => {

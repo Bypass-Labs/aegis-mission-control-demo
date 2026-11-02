@@ -92,6 +92,14 @@ export function createMissionSystem() {
   const challenges = new Map<string, number>();
   const sessions = new Map<string, number>();
   const mission: Mission = {angle: 32.4, thrust: 68, updatedBy: 'Cmdr. Vega'};
+  const events = [{id: 1, time: new Date().toISOString(),
+    message: 'Interceptor ready. Deflection window open.'}];
+
+  function confidence() {
+    const angleError = Math.abs(mission.angle - 32.4) * 1.3;
+    const thrustError = Math.abs(mission.thrust - 68) * .8;
+    return Math.max(1, Math.round(73 - angleError - thrustError));
+  }
 
   function crewById(id: number): Crew | undefined {
     return db.prepare('SELECT * FROM crew WHERE id = ?').get(id) as Crew | undefined;
@@ -119,9 +127,17 @@ export function createMissionSystem() {
     }
 
     if (method === 'GET' && path === '/api/public/briefing') {
+      const projectedConfidence = confidence();
       sendJson(res, 200, {mission: 'PROJECT AEGIS', asteroid: '2026 QX-9',
-        impactEta: '02:14:36', confidence: 73, status: 'DEFLECTION WINDOW OPEN',
+        impactEta: '02:14:36', confidence: projectedConfidence,
+        status: projectedConfidence < 30 ? 'COLLISION COURSE DETECTED' :
+          'DEFLECTION WINDOW OPEN',
         vector: mission});
+      return;
+    }
+
+    if (method === 'GET' && path === '/api/public/events') {
+      sendJson(res, 200, {items: events.slice(-8)});
       return;
     }
 
@@ -197,7 +213,9 @@ export function createMissionSystem() {
       mission.angle = angle;
       mission.thrust = thrust;
       mission.updatedBy = crew.callsign;
-      sendJson(res, 200, {ok: true, vector: mission});
+      events.push({id: events.length + 1, time: new Date().toISOString(),
+        message: `Burn vector changed to ${angle.toFixed(1)}° / ${thrust}% by ${crew.callsign}.`});
+      sendJson(res, 200, {ok: true, vector: mission, confidence: confidence()});
       return;
     }
 

@@ -5,6 +5,7 @@ type Telemetry = {id: number; sector: string; signal: string; severity: string};
 type TelemetryResult = {count: number; items: Telemetry[]};
 type LoginResult = {challengeId?: string; callsign?: string; error?: string};
 type ControlsResult = {crew?: string; role?: string; error?: string};
+type MissionEvent = {id: number; time: string; message: string};
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const form = (id: string) => element<HTMLFormElement>(id);
@@ -50,7 +51,13 @@ function showCrew(callsign: string | null) {
 async function loadBriefing() {
   const result = await api<Briefing>('/api/public/briefing');
   if (!result.ok) return;
-  const {confidence, vector} = result.data;
+  const {confidence, status, vector} = result.data;
+  const critical = confidence < 30;
+  document.body.classList.toggle('mission-critical', critical);
+  element('statusTitle').textContent = status;
+  element('statusDetail').textContent = critical ?
+    'Interceptor vector is outside the safe deflection corridor.' :
+    'Interceptor ready for trajectory lock';
   element('confidence').textContent = `${confidence}%`;
   element('confidenceBar').style.width = `${confidence}%`;
   element('angle').textContent = vector.angle.toFixed(1);
@@ -58,6 +65,16 @@ async function loadBriefing() {
   element('updatedBy').textContent = vector.updatedBy;
   form('vectorForm').querySelector<HTMLInputElement>('input[name="angle"]')!.value = String(vector.angle);
   form('vectorForm').querySelector<HTMLInputElement>('input[name="thrust"]')!.value = String(vector.thrust);
+}
+
+let lastEventId = 0;
+async function loadEvents() {
+  const result = await api<{items: MissionEvent[]}>('/api/public/events');
+  if (!result.ok) return;
+  for (const item of result.data.items) {
+    if (item.id > lastEventId) logEvent(item.message);
+    lastEventId = Math.max(lastEventId, item.id);
+  }
 }
 
 async function loadTelemetry(query = '') {
@@ -148,8 +165,7 @@ form('vectorForm').addEventListener('submit', event => {
     angle: Number(values.get('angle')), thrust: Number(values.get('thrust'))
   }).then(async result => {
     if (!result.ok) return logEvent(result.data.error ?? 'Vector update rejected.');
-    await loadBriefing();
-    logEvent('Interceptor burn vector committed.');
+    await Promise.all([loadBriefing(), loadEvents()]);
   });
 });
 
@@ -188,8 +204,12 @@ setInterval(() => {
 }, 1000);
 
 void Promise.allSettled([
-  loadBriefing(), loadTelemetry(), loadCrew(),
+  loadBriefing(), loadTelemetry(), loadCrew(), loadEvents(),
   api<{revision: string}>('/api/system/version').then(result => {
     if (result.ok) element('revision').textContent = result.data.revision.slice(0, 7).toUpperCase();
   })
 ]);
+
+setInterval(() => {
+  void Promise.allSettled([loadBriefing(), loadEvents()]);
+}, 4000);

@@ -91,6 +91,15 @@ h2 { margin: 0; font-weight: 590; font-size: 15px; letter-spacing: .01em; }
 .orbit-stage { position: relative; background: radial-gradient(ellipse at 33% 55%, rgba(18, 104, 139, .11), transparent 55%); overflow: hidden; }
 .orbit-stage svg { display: block; width: 100%; height: min(36vw, 431px); min-height: 325px; }
 .approach-path, .intercept-path { animation: dash 23s linear infinite; }
+.impact-path, .impact-label { opacity: 0; transition: opacity .35s; }
+.impact-label { fill: #ff7c6b; font: 600 11px var(--mono); letter-spacing: 2px; }
+body.mission-critical .impact-path, body.mission-critical .impact-label { opacity: 1; }
+body.mission-critical .impact-path { animation: dash 4s linear infinite; }
+body.mission-critical .intercept-path { opacity: .22; }
+body.mission-critical .status-banner { border-color: rgba(255, 83, 76, .75); background: rgba(150, 37, 52, .3); box-shadow: 0 0 35px rgba(255, 52, 52, .12); }
+body.mission-critical .status-banner strong { color: #ff8f7d; }
+body.mission-critical .meter span { background: linear-gradient(90deg, #a43549, #ff7b65); box-shadow: 0 0 14px #ff5c50; }
+body.mission-critical .countdown-card { border-color: rgba(255, 80, 73, .8); box-shadow: 0 0 45px rgba(255, 44, 56, .14); }
 .asteroid { transform-origin: 0 0; animation: drift 5s ease-in-out infinite; }
 .map-corner { position: absolute; bottom: 16px; color: #6d8d9b; font-size: 9px; letter-spacing: .12em; }
 .map-corner-left { left: 19px; }
