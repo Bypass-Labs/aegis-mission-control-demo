@@ -30,3 +30,13 @@ jobs:
             sleep 0.2
           done
           npm run test:security
+
+  deploy-demo:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: crew-access
+    runs-on: [self-hosted, linux, x64, aegis-demo]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Deploy verified commit
+        run: bash deploy.sh

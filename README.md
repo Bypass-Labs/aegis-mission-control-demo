@@ -28,6 +28,19 @@ docker run --rm --read-only --cap-drop=ALL --pids-limit=64 --memory=256m \
 The UI reports the build revision from `/api/system/version`. Restarting the
 server resets the in-memory mission state.
 
+## Demo deployment
+
+The GitHub Actions workflow checks every push and pull request. Once those
+checks pass on `main`, its `deploy-demo` job uses a self-hosted runner on the
+demo server with the `aegis-demo` label. `deploy.sh` builds that exact commit,
+replaces the loopback-only container, checks `/api/system/version`, and restores
+the previous image if startup fails.
+
+Route `demo-app.bypasslabs.ai` through a Cloudflare Tunnel to
+`http://127.0.0.1:3010`. Protect the hostname with Cloudflare Access for the
+demo team before connecting the tunnel. Keep the tunnel token and GitHub runner
+registration outside this repository.
+
 ## Demo identities
 
 These accounts are disposable fixture data:
