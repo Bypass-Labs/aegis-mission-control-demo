@@ -37,9 +37,9 @@ replaces the loopback-only container, checks `/api/system/version`, and restores
 the previous image if startup fails.
 
 Route `demo-app.bypasslabs.ai` through a Cloudflare Tunnel to
-`http://127.0.0.1:3010`. Protect the hostname with Cloudflare Access for the
-demo team before connecting the tunnel. Keep the tunnel token and GitHub runner
-registration outside this repository.
+`http://127.0.0.1:3010`. This demo currently publishes the intentionally
+vulnerable baseline without Cloudflare Access, as selected by the operator.
+Keep tunnel credentials and GitHub runner registration outside this repository.
 
 ## Demo identities
 

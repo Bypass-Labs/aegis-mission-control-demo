@@ -64,6 +64,11 @@ curl -fsS http://127.0.0.1:3010/api/system/version
 The original PoCs can also be replayed with `--expect-fixed` from
 `.bypass/runs/bx-20261102-d3c8975e/poc/f-001/` and `f-002/`.
 
-The GitHub Actions workflow runs the same checks on pushes and pull requests.
-Its actual hosted result, a private GitHub repository, and any Cloudflare
-deployment remain to be verified before filming those claims.
+The private repository is
+[`Bypass-Labs/aegis-mission-control-demo`](https://github.com/Bypass-Labs/aegis-mission-control-demo).
+The public tunnel currently serves the vulnerable `main` build at
+`https://demo-app.bypasslabs.ai`; `/api/system/version` returned `ab63f24`.
+[PR #1](https://github.com/Bypass-Labs/aegis-mission-control-demo/pull/1)
+contains the focused fix, and its hosted `crew-access` check passed. The
+`aegis-demo` deployment runner is online. The merge-triggered deployment has
+not yet run; verify it during the demo before claiming that CI deployed the fix.
