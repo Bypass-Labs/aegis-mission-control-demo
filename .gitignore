@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 *.log
+
+# Bypass local evidence and target authorization
+.bypass/
+blackbox.scope.json

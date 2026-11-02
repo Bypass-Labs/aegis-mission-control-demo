@@ -10,7 +10,8 @@
     "build": "node build.mjs",
     "check": "tsc --noEmit",
     "start": "node dist/server.js",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs",
+    "test:security": "node --test tests/security/blackbox/bx-20261102-d3c8975e-f-001.test.mjs tests/security/blackbox/bx-20261102-d3c8975e-f-002.test.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

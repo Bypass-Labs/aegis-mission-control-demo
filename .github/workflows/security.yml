@@ -1,0 +1,32 @@
+name: Crew access regression
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  crew-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - name: Replay Bypass crew-access regressions
+        run: |
+          PORT=3010 node dist/server.js > /tmp/aegis-ci.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3010/api/system/version > /dev/null; then break; fi
+            sleep 0.2
+          done
+          npm run test:security
