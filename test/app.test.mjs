@@ -99,6 +99,20 @@ test('authenticated crew can read controls and adjust the simulated vector', asy
   await post('/api/mission/vector', {angle: 32.4, thrust: 68}, cookie);
 });
 
+test('a claimed crew header cannot read or change mission controls', async () => {
+  const headers = {'X-Crew-Id': '1'};
+  const controls = await fetch(`${base}/api/mission/controls`, {headers});
+  assert.equal(controls.status, 401);
+  const vector = await fetch(`${base}/api/mission/vector`, {method: 'POST',
+    headers: {...headers, 'content-type': 'application/json'},
+    body: JSON.stringify({angle: 0, thrust: 0})});
+  assert.equal(vector.status, 401);
+  const uplink = await fetch(`${base}/api/diagnostics/uplink`, {method: 'POST',
+    headers: {...headers, 'content-type': 'application/json'},
+    body: JSON.stringify({target: 'relay-7'})});
+  assert.equal(uplink.status, 401);
+});
+
 test('remote preview and a crew uplink check work with ordinary inputs', async () => {
   const feed = createServer((_req, res) => res.end('Observatory feed nominal'));
   const feedPort = await listen(feed);

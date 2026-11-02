@@ -108,11 +108,7 @@ export function createMissionSystem() {
   function principal(req: IncomingMessage): Crew | undefined {
     const sessionId = cookies(req).aegis_session;
     const sessionCrew = sessionId ? sessions.get(sessionId) : undefined;
-    if (sessionCrew) return crewById(sessionCrew);
-
-    const claimedId = req.headers['x-crew-id'];
-    if (typeof claimedId === 'string') return crewById(Number(claimedId));
-    return undefined;
+    return sessionCrew ? crewById(sessionCrew) : undefined;
   }
 
   async function handle(req: IncomingMessage, res: ServerResponse) {
