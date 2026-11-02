@@ -43,6 +43,8 @@ source fix and passes after it, and the deployed revision no longer reproduces
 that issue. The other seeded issues remain separate investigation leads; a fix
 for one issue is not a claim that the whole simulator is secure.
 
+The rehearsed sequence, Git refs, and video timing are in [DEMO_RUNBOOK.md](DEMO_RUNBOOK.md).
+
 Do not expose the vulnerable build as an unrestricted public service. Its
 diagnostic route intentionally runs an operating-system command. Use the
 disposable container above for live testing.
