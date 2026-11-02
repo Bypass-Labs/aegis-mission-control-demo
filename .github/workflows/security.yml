@@ -1,0 +1,49 @@
+name: Aegis checks and demo deployment
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  app-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - name: Replay exported Bypass regressions when present
+        shell: bash
+        run: |
+          shopt -s nullglob
+          tests=(tests/security/blackbox/*.test.mjs)
+          if ((${#tests[@]} == 0)); then
+            echo "No exported Bypass regressions yet"
+            exit 0
+          fi
+          PORT=3010 node dist/server.js > /tmp/aegis-ci.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3010/api/system/version > /dev/null; then break; fi
+            sleep 0.2
+          done
+          node --test "${tests[@]}"
+
+  deploy-demo:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: app-checks
+    runs-on: [self-hosted, linux, x64, aegis-demo]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Deploy verified commit
+        run: bash deploy.sh

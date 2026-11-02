@@ -28,6 +28,17 @@ docker run --rm --read-only --cap-drop=ALL --pids-limit=64 --memory=256m \
 The UI reports the build revision from `/api/system/version`. Restarting the
 server resets the in-memory mission state.
 
+## Demo CI and deployment
+
+GitHub Actions checks TypeScript, app tests, and any exported Bypass regression
+tests on each PR. A passing push to `main` deploys that exact commit through the
+`aegis-demo` runner to the loopback container served by
+`https://demo-app.bypasslabs.ai`. `deploy.sh` checks the deployed revision and
+restores the previous image if startup fails.
+
+The repository starts from a deliberately vulnerable baseline. Exported
+regressions arrive with the proposed fix during the live Bypass demo.
+
 ## Demo identities
 
 These accounts are disposable fixture data:
